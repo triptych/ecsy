@@ -490,6 +490,7 @@
 
 	  removeComponent(Component, immediately) {
 	    const componentName = Component.name;
+	    const component = this.components[componentName];
 
 	    if (!this._componentsToRemove[componentName]) {
 	      delete this.components[componentName];
@@ -501,8 +502,6 @@
 	        this.world.onRemoveComponent(this, Component);
 	      }
 	    }
-
-	    const component = this.components[componentName];
 
 	    if (immediately) {
 	      if (component) {
