@@ -1,8 +1,7 @@
-import "../helpers/common.js";
 import test from "ava";
 import { World, System } from "../../src/index.js";
 
-test("registerSystems", t => {
+test("registerSystems", (t) => {
   let world = new World();
 
   class SystemA extends System {}
@@ -18,7 +17,23 @@ test("registerSystems", t => {
   t.is(world.systemManager._systems.length, 2);
 });
 
-test("registerSystems with different systems matching names", t => {
+test("passes attributes to system.init", (t) => {
+  var world = new World();
+
+  const attributes = { test: 10 };
+
+  class SystemTest extends System {
+    init(attributes) {
+      this.attributes = attributes;
+    }
+  }
+
+  world.registerSystem(SystemTest, attributes);
+  const system = world.getSystem(SystemTest);
+  t.deepEqual(system.attributes, attributes);
+});
+
+test("registerSystems with different systems matching names", (t) => {
   let world = new World();
 
   function importSystemA() {

@@ -11,6 +11,9 @@ ECSY (pronounced as "eck-see") is an highly experimental Entity Component System
 
 For detailed information on the architecture and API please visit the [documentation page](https://ecsy.io/docs/#/)
 
+* discourse forum: https://discourse.mozilla.org/c/mixed-reality/ecsy
+* discord: https://discord.gg/cFnrQ2v
+
 ## Features
 - Framework agnostic
 - Focused on providing a simple but yet efficient API
@@ -25,6 +28,15 @@ For detailed information on the architecture and API please visit the [documenta
   - Reactive events will not generate a random callback when emited but queued and be processed in order
 - Modern Javascript: ES6, classes, modules,...
 - Pool for components and entities
+
+## Goals
+Our goal is for ECSY to be a lightweight, simple, and performant ECS library that can be easily extended and encoruages open source collaboration.
+
+ECSY will not ship with features that bind it to a rendering engine or framework. Instead, we encourage the community to build framework specific projects like [ecsy-three](https://github.com/MozillaReality/ecsy-three), [ecsy-babylon](https://github.com/kaliber5/ecsy-babylon), and [ecsy-two](https://github.com/joshmarinacci/ecsy-two).
+
+ECSY does not adhere strictly to "pure ECS design". We focus on APIs that push users towards good ECS design like putting their logic in systems and data in components. However, we will sometimes break the rules for API ergonomics, performance in a JS context, or integration with non-ECS frameworks.
+
+ECSY is designed for a community driven ecosystem. We encourage users to come up with modular components and systems that can be composed into larger games, apps, and engines.
 
 # Examples
 - Ball example:
@@ -58,7 +70,7 @@ npm install --save ecsy
     </style>
     
     <script type="module">
-      import { World, System, TagComponent } from "https://ecsy.io/build/ecsy.module.js";
+      import { World, System, Component, TagComponent, Types } from "https://ecsy.io/build/ecsy.module.js";
 
       const NUM_ELEMENTS = 50;
       const SPEED_MULTIPLIER = 0.3;
@@ -76,25 +88,27 @@ npm install --save ecsy
       //----------------------
       
       // Velocity component
-      class Velocity {
-        constructor() {
-          this.x = this.y = 0;
-        }
-      }
+      class Velocity extends Component {}
+
+      Velocity.schema = {
+        x: { type: Types.Number },
+        y: { type: Types.Number }
+      };
 
       // Position component
-      class Position {
-        constructor() {
-          this.x = this.y = 0;
-        }
-      }
+      class Position extends Component {}
+
+      Position.schema = {
+        x: { type: Types.Number },
+        y: { type: Types.Number }
+      };
       
       // Shape component
-      class Shape {
-        constructor() {
-          this.primitive = 'box';
-        }
-      }
+      class Shape extends Component {}
+
+      Shape.schema = {
+        primitive: { type: Types.String, default: 'box' }
+      };
       
       // Renderable component
       class Renderable extends TagComponent {}
@@ -175,9 +189,13 @@ npm install --save ecsy
         renderables: { components: [Renderable, Shape] }
       }
       
-      // Create world and register the systems on it
+      // Create world and register the components and systems on it
       var world = new World();
       world
+        .registerComponent(Velocity)
+        .registerComponent(Position)
+        .registerComponent(Shape)
+        .registerComponent(Renderable)
         .registerSystem(MovableSystem)
         .registerSystem(RendererSystem);
 
@@ -233,7 +251,7 @@ npm install --save ecsy
   </body>
 </html>
 ```
-[Try it on glitch](https://glitch.com/~ecsy-boxes-and-circles)
+[Try it on glitch](https://glitch.com/~ecsy-0-3-0-boxes-and-circles)
 
 
 You can also include the hosted javascript directly on your HTML:
